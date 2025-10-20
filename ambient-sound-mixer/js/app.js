@@ -14,10 +14,12 @@ class AmbientMixer{
         this.isInitialized=false
     }
 
-    init() {
+   init() {
         try {
             // load All sound files
             this.loadAllSound()
+
+            
             this.isInitialized=true
             
         } catch (error) {
@@ -45,4 +47,7 @@ document.addEventListener('DOMContentLoaded', () =>
     const app = new AmbientMixer()
     
     app.init()
+
+    // Make app available for testing in browse
+    window.app=app
 })
