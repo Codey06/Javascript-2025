@@ -21,7 +21,9 @@ class AmbientMixer{
            this.ui.init()
 
            // Render sound cards using sound data
-            this.ui.renderSoundCards(sounds)
+           this.ui.renderSoundCards(sounds)
+           
+           this.setupEventListeners()
            
             // load All sound files
             this.loadAllSound()
@@ -34,9 +36,20 @@ class AmbientMixer{
             
         }
     }
+    // Setup all event listeners
+    setupEventListeners(){
+        // Hadle All Clicks with event delegation
+        document.addEventListener('click', async(e) => {
+            // check if the play button was clicked
+            if (e.target.closest('.play-btn')) {
+                const soundId = e.target.closest('.play-btn').dataset.sound
+              await this.toggleSound(soundId)
+            }
+        })
+    }
+
 
     // Load All sounf files
-
     loadAllSound() {
         sounds.forEach((sound) => {
             const audioUrl = `audio/${sound.file}`
@@ -46,7 +59,29 @@ class AmbientMixer{
             }
         })
     }
+    // Togglle individual sound
+ 
+async toggleSound(soundId) {
+    const audio = this.soundManager.audioElements.get(soundId)
+    if (!audio) {
+        console.error(`Sound ${soundId} not found`)
+        return false
+    }
+    if (audio.paused) {
+        // Sound is off, turn it on
+        this.soundManager.setVolume(soundId, 50)
+        await this.soundManager.playSound(soundId)
+
+        this.ui.updateSoundPlayButton(soundId,true)
+    } else {
+        // Sound is on, shut it off
+        this.soundManager.pauseSound(soundId)
+        this.ui.updateSoundPlayButton(soundId,false)
+    }
 }
+}
+
+
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () =>
@@ -55,6 +90,4 @@ document.addEventListener('DOMContentLoaded', () =>
     
     app.init()
 
-    // Make app available for testing in browse
-    window.app=app
 })
